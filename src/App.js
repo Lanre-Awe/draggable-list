@@ -34,6 +34,11 @@ function App() {
     list.splice(result.destination.index, 0, item);
     return list;
   };
+  const listStructure = (stateList, result) => {
+    const list = Array.from(stateList);
+    list.splice(result.source.index, 1);
+    return list;
+  };
   const arrangeList = (stateList, result) => {
     const list = Array.from(stateList);
     const [reorderedList] = list.splice(result.source.index, 1);
@@ -48,19 +53,13 @@ function App() {
       result.destination.droppableId === "tables" &&
       result.source.droppableId === "table2"
     ) {
-      const orderList = Array.from(stateOrders);
-      orderList.splice(result.source.index, 1);
-
-      setStateOrders(orderList);
+      setStateOrders(listStructure(stateOrders, result));
       setStateCustomers(updateList(stateCustomers, result, customers));
     } else if (result.destination.droppableId === "tables") {
       setStateCustomers(arrangeList(stateCustomers, result));
     } else {
       if (result.source.droppableId === "tables") {
-        const customerList = Array.from(stateCustomers);
-        customerList.splice(result.source.index, 1);
-
-        setStateCustomers(customerList);
+        setStateCustomers(listStructure(stateCustomers, result));
         setStateOrders(updateList(stateOrders, result, customers));
         const d = new Date();
         setDateDelivery({
