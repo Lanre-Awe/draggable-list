@@ -28,41 +28,40 @@ function App() {
   const [stateOrders, setStateOrders] = useState(orders);
   const [date, setDateDelivery] = useState("");
 
+  const updateList = (stateList, result, mainList) => {
+    const list = Array.from(stateList);
+    const item = mainList.find((item) => item.id === result.draggableId);
+    list.splice(result.destination.index, 0, item);
+    return list;
+  };
+  const arrangeList = (stateList, result) => {
+    const list = Array.from(stateList);
+    const [reorderedList] = list.splice(result.source.index, 1);
+    list.splice(result.destination.index, 0, reorderedList);
+
+    return list;
+  };
+
   const handleItems = (result) => {
     if (!result.destination) return;
     if (
       result.destination.droppableId === "tables" &&
       result.source.droppableId === "table2"
     ) {
-      const customerList = Array.from(stateCustomers);
-      const customer = customers.find((item) => item.id === result.draggableId);
-      customerList.splice(result.destination.index, 0, customer);
       const orderList = Array.from(stateOrders);
       orderList.splice(result.source.index, 1);
 
       setStateOrders(orderList);
-      setStateCustomers(customerList);
+      setStateCustomers(updateList(stateCustomers, result, customers));
     } else if (result.destination.droppableId === "tables") {
-      const customerList = Array.from(stateCustomers);
-      const [reorderedCustomerlist] = customerList.splice(
-        result.source.index,
-        1
-      );
-      customerList.splice(result.destination.index, 0, reorderedCustomerlist);
-
-      setStateCustomers(customerList);
+      setStateCustomers(arrangeList(stateCustomers, result));
     } else {
       if (result.source.droppableId === "tables") {
-        const orderList = Array.from(stateOrders);
-        const customer = customers.find(
-          (item) => item.id === result.draggableId
-        );
         const customerList = Array.from(stateCustomers);
         customerList.splice(result.source.index, 1);
 
-        orderList.splice(result.destination.index, 0, customer);
         setStateCustomers(customerList);
-        setStateOrders(orderList);
+        setStateOrders(updateList(stateOrders, result, customers));
         const d = new Date();
         setDateDelivery({
           day: new Date(d.setDate(d.getDate() + 7)).getDate().toString(),
@@ -70,11 +69,7 @@ function App() {
           year: d.getFullYear(),
         });
       } else {
-        const orderList = Array.from(stateCustomers);
-        const [reorderedOrderlist] = orderList.splice(result.source.index, 1);
-        orderList.splice(result.destination.index, 0, reorderedOrderlist);
-
-        setStateOrders(orderList);
+        setStateOrders(arrangeList(stateOrders, result));
       }
     }
   };
